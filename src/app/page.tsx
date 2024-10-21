@@ -7,6 +7,7 @@ import { delay } from "@/lib/utils";
 import { Suspense } from "react";
 import { getWixClient } from "@/lib/wix-client.base";
 import Product from "@/components/Product";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function Home() {
@@ -32,7 +33,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-secondary via-transparent to-transparent" />
         </div>
       </div>
-      <Suspense fallback={"Loading..."}>
+      <Suspense fallback={<LoadingSkeleton/>}>
         <FeaturedProduct />
       </Suspense>
     </main>
@@ -40,31 +41,50 @@ export default function Home() {
 }
 
 async function FeaturedProduct() {
-  await delay(1000);
-  const wixClient = getWixClient();
-  const { collection } =
-    await wixClient.collections.getCollectionBySlug("featured-products");
+  try {
+    await delay(1000); 
+    const wixClient = getWixClient();
 
-  if (!collection?._id) {
-    return null;
-  }
+    const { collection } = await wixClient.collections.getCollectionBySlug("featured-products");
+    if (!collection?._id) {
+      console.log("No collection found");
+      return <p>No featured products found.</p>;
+    }
 
-  const featuredProducts = await wixClient.products
-    .queryProducts()
-    .hasSome("collectionIds", [collection._id])
-    .descending("lastUpdated")
-    .find();
-  if (!featuredProducts.items.length) {
-    return null;
-  }
-  return (
-    <div className="space-y-5">
-      <h2 className="text-2xl font-bold">Featured Products</h2>
-      <div className="flex grid-cols-2 flex-col sm:grid md:grid-cols-3 lg:grid-cols-4">
-        {featuredProducts.items.map((product) => (
-          <Product key={product._id} product={product} />
-        ))} 
+    const featuredProducts = await wixClient.products
+      .queryProducts()
+      .hasSome("collectionIds", [collection._id])
+      .descending("lastUpdated")
+      .find();
+
+    if (!featuredProducts.items.length) {
+      return <p>No products available in this collection.</p>;
+    }
+
+    return (
+      <div className="space-y-5">
+        <h2 className="text-2xl font-bold">Featured Products</h2>
+        <div className="grid grid-cols-2 gap-5 sm:grid md:grid-cols-3 lg:grid-cols-4">
+          {featuredProducts.items.map((product) => (
+            <Product key={product._id} product={product} />
+          ))}
+        </div>
       </div>
+    );
+  } catch (error) {
+    console.error("Error fetching featured products:", error);
+    return <p>Failed to load featured products. Please try again later.</p>;
+  }
+}
+
+
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex gap-5 grid-cols-2 flex-col sm:grid md:grid-cols-3 lg:grid-cols-4 pt-12">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <Skeleton key={i} className="bg-gray-300 animatepulse h-[26rem] w-full"/>
+      ))}
     </div>
   );
 }
