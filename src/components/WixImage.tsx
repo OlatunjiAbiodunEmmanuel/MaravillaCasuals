@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-import { ImgHTMLAttributes } from "react";
+
 import { media as wixMedia } from "@wix/sdk";
+import { ImgHTMLAttributes } from "react";
+
 type WixImageProps = Omit<
   ImgHTMLAttributes<HTMLImageElement>,
   "src" | "width" | "height" | "alt"
@@ -10,7 +12,7 @@ type WixImageProps = Omit<
   alt?: string | null | undefined;
 } & (
     | {
-        scaleToFill: true;
+        scaleToFill?: true;
         width: number;
         height: number;
       }
@@ -19,12 +21,12 @@ type WixImageProps = Omit<
       }
   );
 
-const WixImage = ({
+export default function WixImage({
   mediaIdentifier,
   placeholder = "/placeholder.png",
   alt,
   ...props
-}: WixImageProps) => {
+}: WixImageProps) {
   const imageUrl = mediaIdentifier
     ? props.scaleToFill || props.scaleToFill === undefined
       ? wixMedia.getScaledToFillImageUrl(
@@ -35,7 +37,6 @@ const WixImage = ({
         )
       : wixMedia.getImageUrl(mediaIdentifier).url
     : placeholder;
-  return <img src={imageUrl} alt={alt || ""} {...props} />;
-};
 
-export default WixImage;
+  return <img src={imageUrl} alt={alt || ""} {...props} />;
+}

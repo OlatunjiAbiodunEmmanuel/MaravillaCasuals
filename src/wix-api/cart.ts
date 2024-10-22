@@ -7,7 +7,7 @@ export async function getCart() {
     } catch (error) {
       if (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (error as any).details.applicationError.code === "OWNED_CART_NOT_FOUND"
+        (error as any).details?.applicationError?.code === "OWNED_CART_NOT_FOUND"
       ) {
         return null;
       } else {
