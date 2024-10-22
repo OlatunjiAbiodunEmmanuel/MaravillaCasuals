@@ -19,5 +19,5 @@ export const env = createEnv({
     PUBLIC_NEXT_BASE_URL: process.env.PUBLIC_NEXT_BASE_URL,
     PUBLIC_NEXT_WIX_CLIENT_ID:process.env.PUBLIC_NEXT_WIX_CLIENT_ID
   },
-  emptyStringAsUndefined: true,
+
 });

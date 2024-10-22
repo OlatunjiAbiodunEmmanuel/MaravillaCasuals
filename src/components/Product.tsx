@@ -5,6 +5,7 @@ import React from "react";
 import WixImage from "./WixImage";
 import Badge from "./ui/badge";
 import { formatCurrency } from "@/lib/utils";
+import DiscountBadge from "./DiscountBadge";
 interface ProductProps {
   product: products.Product;
 }
@@ -13,7 +14,7 @@ const Product = ({ product }: ProductProps) => {
   const mainImage = product.media?.mainMedia?.image;
 
   return (
-    <Link href={`/products/${product.slug}`} className="h-full border">
+    <Link href={`/products/${product.slug}`} className="h-full border bg-card">
       <div className="relative overflow-hidden">
         <WixImage
           mediaIdentifier={mainImage?.url}
@@ -25,7 +26,8 @@ const Product = ({ product }: ProductProps) => {
         />
         <div className="absolute bottom-3 right-3 flex flex-wrap items-center gap-2">
           {product.ribbon && <Badge>{product.ribbon}</Badge>}
-          <Badge>
+          {product.discount && <DiscountBadge data={product.discount}/>}
+          <Badge className="bg-secondary text-secondary-foreground font-semibold">
             {getFormattedPrice(product)}
           </Badge>
         </div>
